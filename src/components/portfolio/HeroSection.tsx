@@ -103,31 +103,32 @@ const HeroSection = () => {
             <span className="gradient-text">Future Stack</span>
           </h1>
 
-        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-4 font-light">
-          Full-Stack Developer & AI Engineer crafting intelligent systems 
-          at the intersection of technology and innovation.
-        </p>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mb-4 font-light">
+            Full-Stack Developer & AI Engineer crafting intelligent systems 
+            at the intersection of technology and innovation.
+          </p>
 
-        <p className="font-mono text-sm text-muted-foreground mb-10">
-          <span className="text-primary">const</span> expertise = [<span className="text-secondary">"AI/ML"</span>, <span className="text-secondary">"Finance"</span>, <span className="text-secondary">"Full-Stack"</span>];
-        </p>
+          <p className="font-mono text-sm text-muted-foreground mb-10">
+            <span className="text-primary">const</span> expertise = [<span className="text-secondary">"AI/ML"</span>, <span className="text-secondary">"Finance"</span>, <span className="text-secondary">"Full-Stack"</span>];
+          </p>
 
-        <div className="flex items-center justify-center gap-4">
-          <Button
-            size="lg"
-            className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_30px_-5px_hsl(var(--primary)/0.4)] transition-all duration-300 hover:shadow-[0_0_40px_-5px_hsl(var(--primary)/0.6)] font-display font-semibold"
-            onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}
-          >
-            View Portfolio
-          </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            className="border-border hover:border-primary/50 hover:bg-primary/5 font-display transition-all duration-300"
-          >
-            <FileText className="mr-2 h-4 w-4" />
-            Compile Resume
-          </Button>
+          <div className="flex items-center justify-center md:justify-start gap-4">
+            <Button
+              size="lg"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_30px_-5px_hsl(var(--primary)/0.4)] transition-all duration-300 hover:shadow-[0_0_40px_-5px_hsl(var(--primary)/0.6)] font-display font-semibold"
+              onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}
+            >
+              View Portfolio
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="border-border hover:border-primary/50 hover:bg-primary/5 font-display transition-all duration-300"
+            >
+              <FileText className="mr-2 h-4 w-4" />
+              Compile Resume
+            </Button>
+          </div>
         </div>
       </div>
 
