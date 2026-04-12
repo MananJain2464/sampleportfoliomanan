@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { ArrowDown, FileText } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const HeroSection = () => {
@@ -119,14 +119,6 @@ const HeroSection = () => {
               onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}
             >
               View Portfolio
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-border hover:border-primary/50 hover:bg-primary/5 font-display transition-all duration-300"
-            >
-              <FileText className="mr-2 h-4 w-4" />
-              Compile Resume
             </Button>
           </div>
         </div>
