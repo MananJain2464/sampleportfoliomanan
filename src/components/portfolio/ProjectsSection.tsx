@@ -79,6 +79,15 @@ const ProjectsSection = () => {
                 project.featured ? "md:col-span-2 lg:col-span-2" : ""
               }`}
             >
+              {/* Project image */}
+              <div className="w-full h-40 rounded-lg bg-muted/20 border border-border/30 mb-4 overflow-hidden flex items-center justify-center">
+                {project.image ? (
+                  <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="font-mono text-xs text-muted-foreground">project-thumbnail.png</span>
+                )}
+              </div>
+
               <div className="flex items-start justify-between mb-4">
                 <div className="w-10 h-10 rounded-lg bg-muted/50 flex items-center justify-center">
                   <span className="font-mono text-sm text-primary">{"{ }"}</span>

@@ -8,6 +8,7 @@ interface Article {
   readTime: string;
   tags: string[];
   url: string;
+  image?: string;
 }
 
 const articles: Article[] = [
@@ -80,8 +81,12 @@ const ArticlesSection = () => {
               href={article.url}
               className="group glass-card-hover p-6 flex flex-col md:flex-row md:items-center gap-4 block"
             >
-              <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-muted/50 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                <BookOpen className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+              <div className="flex-shrink-0 w-24 h-16 md:w-32 md:h-20 rounded-lg bg-muted/20 border border-border/30 overflow-hidden flex items-center justify-center group-hover:border-primary/30 transition-colors">
+                {article.image ? (
+                  <img src={article.image} alt={article.title} className="w-full h-full object-cover" />
+                ) : (
+                  <BookOpen className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                )}
               </div>
 
               <div className="flex-1 min-w-0">
