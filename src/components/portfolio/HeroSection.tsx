@@ -77,17 +77,31 @@ const HeroSection = () => {
       <div className="absolute top-1/4 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-[120px] animate-float" />
       <div className="absolute bottom-1/4 -right-32 w-80 h-80 bg-secondary/10 rounded-full blur-[100px] animate-float" style={{ animationDelay: "3s" }} />
 
-      <div className="relative z-10 text-center max-w-4xl px-6">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card mb-8">
-          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          <span className="font-mono text-sm text-muted-foreground">system.status: <span className="text-primary">online</span></span>
+      <div className="relative z-10 max-w-5xl px-6 flex flex-col md:flex-row items-center gap-10 md:gap-16">
+        {/* Profile image */}
+        <div className="flex-shrink-0 relative group">
+          <div className="w-44 h-44 md:w-56 md:h-56 rounded-full overflow-hidden glass-card border-2 border-border/50 group-hover:border-primary/50 transition-all duration-500 shadow-[0_0_40px_-10px_hsl(var(--primary)/0.15)] group-hover:shadow-[0_0_60px_-10px_hsl(var(--primary)/0.3)]">
+            {/* Replace src with your image */}
+            <div className="w-full h-full bg-muted/30 flex items-center justify-center">
+              <span className="font-mono text-xs text-muted-foreground text-center px-4">your-photo.jpg</span>
+            </div>
+          </div>
+          {/* Glow ring */}
+          <div className="absolute -inset-1 rounded-full bg-gradient-to-br from-primary/20 via-transparent to-secondary/20 blur-sm -z-10 opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
         </div>
 
-        <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6">
-          <span className="text-[hsl(var(--text-primary))]">Building the</span>
-          <br />
-          <span className="gradient-text">Future Stack</span>
-        </h1>
+        {/* Text content */}
+        <div className="text-center md:text-left">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card mb-6">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span className="font-mono text-sm text-muted-foreground">system.status: <span className="text-primary">online</span></span>
+          </div>
+
+          <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6">
+            <span className="text-[hsl(var(--text-primary))]">Building the</span>
+            <br />
+            <span className="gradient-text">Future Stack</span>
+          </h1>
 
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-4 font-light">
           Full-Stack Developer & AI Engineer crafting intelligent systems 
