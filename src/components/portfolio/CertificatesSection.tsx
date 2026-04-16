@@ -1,46 +1,18 @@
-import { Award, Trophy, Filter } from "lucide-react";
 import { useState } from "react";
-
-interface CertItem {
-  id: string;
-  name: string;
-  issuer: string;
-  date: string;
-  category: string;
-  credentialId?: string;
-}
-
-interface CompItem {
-  id: string;
-  name: string;
-  rank: string;
-  date: string;
-  category: string;
-  participants?: string;
-}
-
-const certificates: CertItem[] = [
-  { id: "1", name: "AWS Solutions Architect – Professional", issuer: "Amazon Web Services", date: "2024-01", category: "Cloud", credentialId: "AWS-SAP-2024" },
-  { id: "2", name: "TensorFlow Developer Certificate", issuer: "Google", date: "2023-08", category: "AI/ML", credentialId: "TF-DEV-2023" },
-  { id: "3", name: "CFA Level II", issuer: "CFA Institute", date: "2023-06", category: "Finance", credentialId: "CFA-L2-2023" },
-  { id: "4", name: "Kubernetes Administrator (CKA)", issuer: "CNCF", date: "2023-03", category: "DevOps", credentialId: "CKA-2023" },
-  { id: "5", name: "Deep Learning Specialization", issuer: "DeepLearning.AI", date: "2022-11", category: "AI/ML", credentialId: "DL-SPEC-22" },
-];
-
-const competitions: CompItem[] = [
-  { id: "1", name: "Google Code Jam", rank: "#142", date: "2024", category: "Competitive Programming", participants: "30,000+" },
-  { id: "2", name: "Kaggle – Stock Prediction Challenge", rank: "Gold Medal", date: "2023", category: "AI/ML", participants: "4,200+" },
-  { id: "3", name: "HackMIT", rank: "1st Place", date: "2023", category: "Hackathon", participants: "1,500+" },
-  { id: "4", name: "Bloomberg Trading Challenge", rank: "Top 5%", date: "2022", category: "Finance", participants: "8,000+" },
-  { id: "5", name: "ICPC Regional", rank: "#23", date: "2022", category: "Competitive Programming", participants: "500+" },
-];
+import { Award, Trophy, Filter, ExternalLink, Loader2 } from "lucide-react";
+import { useCredentials } from "@/hooks/useCredentials";
 
 const CertificatesSection = () => {
   const [activeTab, setActiveTab] = useState<"certs" | "comps">("certs");
   const [filter, setFilter] = useState("All");
 
-  const certCategories = ["All", ...new Set(certificates.map((c) => c.category))];
-  const compCategories = ["All", ...new Set(competitions.map((c) => c.category))];
+  const { data: certificates = [], isLoading: loadingCerts } = useCredentials("certificate");
+  const { data: competitions = [], isLoading: loadingComps } = useCredentials("competition");
+
+  const isLoading = loadingCerts || loadingComps;
+
+  const certCategories = ["All", ...new Set(certificates.map((c) => c.category).filter(Boolean))];
+  const compCategories = ["All", ...new Set(competitions.map((c) => c.category).filter(Boolean))];
   const categories = activeTab === "certs" ? certCategories : compCategories;
 
   const filteredCerts = filter === "All" ? certificates : certificates.filter((c) => c.category === filter);
@@ -99,60 +71,86 @@ const CertificatesSection = () => {
         </div>
 
         {/* Table */}
-        <div className="glass-card overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-border/50">
-                  {activeTab === "certs" ? (
-                    <>
-                      <th className="text-left px-6 py-4 font-mono text-xs text-muted-foreground uppercase tracking-wider">Certificate</th>
-                      <th className="text-left px-6 py-4 font-mono text-xs text-muted-foreground uppercase tracking-wider">Issuer</th>
-                      <th className="text-left px-6 py-4 font-mono text-xs text-muted-foreground uppercase tracking-wider">Date</th>
-                      <th className="text-left px-6 py-4 font-mono text-xs text-muted-foreground uppercase tracking-wider">ID</th>
-                    </>
-                  ) : (
-                    <>
-                      <th className="text-left px-6 py-4 font-mono text-xs text-muted-foreground uppercase tracking-wider">Competition</th>
-                      <th className="text-left px-6 py-4 font-mono text-xs text-muted-foreground uppercase tracking-wider">Rank</th>
-                      <th className="text-left px-6 py-4 font-mono text-xs text-muted-foreground uppercase tracking-wider">Year</th>
-                      <th className="text-left px-6 py-4 font-mono text-xs text-muted-foreground uppercase tracking-wider">Participants</th>
-                    </>
-                  )}
-                </tr>
-              </thead>
-              <tbody>
-                {activeTab === "certs"
-                  ? filteredCerts.map((cert) => (
-                      <tr key={cert.id} className="border-b border-border/20 hover:bg-muted/20 transition-colors">
-                        <td className="px-6 py-4">
-                          <div>
-                            <p className="text-sm font-medium text-[hsl(var(--text-primary))]">{cert.name}</p>
-                            <p className="text-xs text-muted-foreground mt-0.5">{cert.category}</p>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-sm text-foreground/80">{cert.issuer}</td>
-                        <td className="px-6 py-4 font-mono text-sm text-muted-foreground">{cert.date}</td>
-                        <td className="px-6 py-4 font-mono text-xs text-primary/70">{cert.credentialId}</td>
-                      </tr>
-                    ))
-                  : filteredComps.map((comp) => (
-                      <tr key={comp.id} className="border-b border-border/20 hover:bg-muted/20 transition-colors">
-                        <td className="px-6 py-4">
-                          <div>
-                            <p className="text-sm font-medium text-[hsl(var(--text-primary))]">{comp.name}</p>
-                            <p className="text-xs text-muted-foreground mt-0.5">{comp.category}</p>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 font-mono text-sm text-primary font-semibold">{comp.rank}</td>
-                        <td className="px-6 py-4 font-mono text-sm text-muted-foreground">{comp.date}</td>
-                        <td className="px-6 py-4 font-mono text-xs text-muted-foreground">{comp.participants}</td>
-                      </tr>
-                    ))}
-              </tbody>
-            </table>
+        {isLoading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="h-8 w-8 text-primary animate-spin" />
           </div>
-        </div>
+        ) : (
+          <div className="glass-card overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border/50">
+                    {activeTab === "certs" ? (
+                      <>
+                        <th className="text-left px-6 py-4 font-mono text-xs text-muted-foreground uppercase tracking-wider">Certificate</th>
+                        <th className="text-left px-6 py-4 font-mono text-xs text-muted-foreground uppercase tracking-wider">Issuer</th>
+                        <th className="text-left px-6 py-4 font-mono text-xs text-muted-foreground uppercase tracking-wider">Date</th>
+                        <th className="text-left px-6 py-4 font-mono text-xs text-muted-foreground uppercase tracking-wider">Link</th>
+                      </>
+                    ) : (
+                      <>
+                        <th className="text-left px-6 py-4 font-mono text-xs text-muted-foreground uppercase tracking-wider">Competition</th>
+                        <th className="text-left px-6 py-4 font-mono text-xs text-muted-foreground uppercase tracking-wider">Result</th>
+                        <th className="text-left px-6 py-4 font-mono text-xs text-muted-foreground uppercase tracking-wider">Date</th>
+                        <th className="text-left px-6 py-4 font-mono text-xs text-muted-foreground uppercase tracking-wider">Link</th>
+                      </>
+                    )}
+                  </tr>
+                </thead>
+                <tbody>
+                  {activeTab === "certs"
+                    ? filteredCerts.map((cert) => (
+                        <tr key={cert.id} className="border-b border-border/20 hover:bg-muted/20 transition-colors">
+                          <td className="px-6 py-4">
+                            <div>
+                              <p className="text-sm font-medium text-[hsl(var(--text-primary))]">{cert.name}</p>
+                              <p className="text-xs text-muted-foreground mt-0.5">{cert.category}</p>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-foreground/80">{cert.issuer}</td>
+                          <td className="px-6 py-4 font-mono text-sm text-muted-foreground">{cert.date}</td>
+                          <td className="px-6 py-4">
+                            {cert.link && (
+                              <a href={cert.link} target="_blank" rel="noopener noreferrer"
+                                className="text-muted-foreground hover:text-primary transition-colors">
+                                <ExternalLink className="h-4 w-4" />
+                              </a>
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    : filteredComps.map((comp) => (
+                        <tr key={comp.id} className="border-b border-border/20 hover:bg-muted/20 transition-colors">
+                          <td className="px-6 py-4">
+                            <div>
+                              <p className="text-sm font-medium text-[hsl(var(--text-primary))]">{comp.name}</p>
+                              <p className="text-xs text-muted-foreground mt-0.5">{comp.category}</p>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 font-mono text-sm text-primary font-semibold">{comp.result}</td>
+                          <td className="px-6 py-4 font-mono text-sm text-muted-foreground">{comp.date}</td>
+                          <td className="px-6 py-4">
+                            {comp.link && (
+                              <a href={comp.link} target="_blank" rel="noopener noreferrer"
+                                className="text-muted-foreground hover:text-primary transition-colors">
+                                <ExternalLink className="h-4 w-4" />
+                              </a>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                </tbody>
+              </table>
+
+              {(activeTab === "certs" ? filteredCerts : filteredComps).length === 0 && (
+                <div className="text-center py-12">
+                  <p className="font-mono text-sm text-muted-foreground">No entries found.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

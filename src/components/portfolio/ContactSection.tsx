@@ -1,9 +1,16 @@
 import { useState } from "react";
-import { Mail, Linkedin, Twitter, Copy, Check, Terminal } from "lucide-react";
+import { Mail, Linkedin, Twitter, Github, Copy, Check, Code2 } from "lucide-react";
+import { usePersonal } from "@/hooks/usePersonal";
 
 const ContactSection = () => {
   const [copied, setCopied] = useState(false);
-  const email = "your.email@example.com";
+  const { data: personal } = usePersonal();
+
+  const email = personal?.email ?? "er.mananjain26@gmail.com";
+  const linkedin = personal?.linkedin ?? "https://www.linkedin.com/in/manan-jain-6770751b6";
+  const twitter = personal?.twitter ?? "https://x.com/manan_jain26";
+  const github = personal?.github ?? "https://github.com/MananJain2464";
+  const leetcode = personal?.leetcode ?? "https://leetcode.com/u/manan_jain_iiitn/";
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(email);
@@ -13,8 +20,10 @@ const ContactSection = () => {
 
   const links = [
     { icon: Mail, label: "Gmail", href: `mailto:${email}`, color: "hover:text-primary" },
-    { icon: Linkedin, label: "LinkedIn", href: "https://linkedin.com", color: "hover:text-[#0A66C2]" },
-    { icon: Twitter, label: "X / Twitter", href: "https://x.com", color: "hover:text-foreground" },
+    { icon: Linkedin, label: "LinkedIn", href: linkedin, color: "hover:text-[#0A66C2]" },
+    { icon: Twitter, label: "X / Twitter", href: twitter, color: "hover:text-foreground" },
+    { icon: Github, label: "GitHub", href: github, color: "hover:text-foreground" },
+    { icon: Code2, label: "LeetCode", href: leetcode, color: "hover:text-[#FFA116]" },
   ];
 
   return (
@@ -67,7 +76,7 @@ const ContactSection = () => {
         </div>
 
         {/* Social links */}
-        <div className="flex items-center justify-center gap-6">
+        <div className="flex items-center justify-center gap-4 flex-wrap">
           {links.map(({ icon: Icon, label, href, color }) => (
             <a
               key={label}
@@ -88,9 +97,9 @@ const ContactSection = () => {
       {/* Footer */}
       <div className="mt-24 pt-8 border-t border-border/30 text-center">
         <p className="font-mono text-xs text-muted-foreground">
-          <span className="text-primary">©</span> {new Date().getFullYear()} — Designed & Built with precision.
+          <span className="text-primary">©</span> {new Date().getFullYear()} {personal?.name ?? "Manan Jain"} — Designed & Built with precision.
           <span className="mx-2 text-border">|</span>
-          <span className="text-muted-foreground/50">v1.0.0</span>
+          <span className="text-muted-foreground/50">v2.0.0</span>
         </p>
       </div>
     </section>

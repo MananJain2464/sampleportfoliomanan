@@ -1,9 +1,11 @@
 import { useEffect, useRef } from "react";
 import { ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { usePersonal } from "@/hooks/usePersonal";
 
 const HeroSection = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { data: personal } = usePersonal();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -69,10 +71,18 @@ const HeroSection = () => {
     };
   }, []);
 
+  const name = personal?.name ?? "Manan Jain";
+  const designation = personal?.designation ?? "Final Year B.Tech(CSE) | IIIT Nagpur";
+  const bio = personal?.bio ?? "";
+  const resumeUrl = personal?.resume_url ?? "#";
+
+  // Short one-liner from bio (first sentence)
+  const shortBio = bio ? bio.split(".")[0] + "." : "Building things that matter — at the intersection of AI, ML, and full-stack development.";
+
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <canvas ref={canvasRef} className="absolute inset-0 z-0" />
-      
+
       {/* Gradient orbs */}
       <div className="absolute top-1/4 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-[120px] animate-float" />
       <div className="absolute bottom-1/4 -right-32 w-80 h-80 bg-secondary/10 rounded-full blur-[100px] animate-float" style={{ animationDelay: "3s" }} />
@@ -81,9 +91,19 @@ const HeroSection = () => {
         {/* Profile image */}
         <div className="flex-shrink-0 relative group">
           <div className="w-44 h-44 md:w-56 md:h-56 rounded-full overflow-hidden glass-card border-2 border-border/50 group-hover:border-primary/50 transition-all duration-500 shadow-[0_0_40px_-10px_hsl(var(--primary)/0.15)] group-hover:shadow-[0_0_60px_-10px_hsl(var(--primary)/0.3)]">
-            {/* Replace src with your image */}
-            <div className="w-full h-full bg-muted/30 flex items-center justify-center">
-              <span className="font-mono text-xs text-muted-foreground text-center px-4">your-photo.jpg</span>
+            <img
+              src="/profile.png"
+              alt={name}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = "none";
+                (e.target as HTMLImageElement).nextElementSibling?.classList.remove("hidden");
+              }}
+            />
+            <div className="hidden w-full h-full bg-muted/30 flex items-center justify-center">
+              <span className="font-mono text-xs text-muted-foreground text-center px-4">
+                {name.split(" ").map(n => n[0]).join("")}
+              </span>
             </div>
           </div>
           {/* Glow ring */}
@@ -97,29 +117,36 @@ const HeroSection = () => {
             <span className="font-mono text-sm text-muted-foreground">system.status: <span className="text-primary">online</span></span>
           </div>
 
-          <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6">
-            <span className="text-[hsl(var(--text-primary))]">Building the</span>
-            <br />
-            <span className="gradient-text">Future Stack</span>
+          <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4">
+            <span className="text-[hsl(var(--text-primary))]">{name}</span>
           </h1>
 
+          <p className="font-mono text-sm text-primary mb-4">{designation}</p>
+
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mb-4 font-light">
-            Full-Stack Developer & AI Engineer crafting intelligent systems 
-            at the intersection of technology and innovation.
+            {shortBio}
           </p>
 
           <p className="font-mono text-sm text-muted-foreground mb-10">
-            <span className="text-primary">const</span> expertise = [<span className="text-secondary">"AI/ML"</span>, <span className="text-secondary">"Finance"</span>, <span className="text-secondary">"Full-Stack"</span>];
+            <span className="text-primary">const</span> focus = [<span className="text-secondary">"AI/ML"</span>, <span className="text-secondary">"MLOps"</span>, <span className="text-secondary">"Full-Stack"</span>];
           </p>
 
-          <div className="flex items-center justify-center md:justify-start gap-4">
+          <div className="flex items-center justify-center md:justify-start gap-4 flex-wrap">
             <Button
               size="lg"
               className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_30px_-5px_hsl(var(--primary)/0.4)] transition-all duration-300 hover:shadow-[0_0_40px_-5px_hsl(var(--primary)/0.6)] font-display font-semibold"
               onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}
             >
-              View Portfolio
+              View Projects
             </Button>
+            <a
+              href={resumeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3 rounded-lg border border-border/50 text-sm font-mono text-muted-foreground hover:text-primary hover:border-primary/30 transition-all duration-300"
+            >
+              Resume →
+            </a>
           </div>
         </div>
       </div>
