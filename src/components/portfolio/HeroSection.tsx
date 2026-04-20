@@ -114,21 +114,17 @@ const HeroSection = () => {
         <div className="text-center md:text-left">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card mb-6">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="font-mono text-sm text-muted-foreground">system.status: <span className="text-primary">online</span></span>
+            <span className="text-sm text-muted-foreground">Available for opportunities</span>
           </div>
 
           <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4">
             <span className="text-[hsl(var(--text-primary))]">{name}</span>
           </h1>
 
-          <p className="font-mono text-sm text-primary mb-4">{designation}</p>
+          <p className="text-base text-primary font-medium mb-5">{designation}</p>
 
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mb-4 font-light">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mb-10 font-light leading-relaxed">
             {shortBio}
-          </p>
-
-          <p className="font-mono text-sm text-muted-foreground mb-10">
-            <span className="text-primary">const</span> focus = [<span className="text-secondary">"AI/ML"</span>, <span className="text-secondary">"MLOps"</span>, <span className="text-secondary">"Full-Stack"</span>];
           </p>
 
           <div className="flex items-center justify-center md:justify-start gap-4 flex-wrap">

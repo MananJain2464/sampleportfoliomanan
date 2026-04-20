@@ -104,9 +104,9 @@ const TimelineSection = () => {
     <section id="career" className="section-padding relative">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-16">
-          <span className="font-mono text-sm text-primary mb-2 block">// career && education</span>
+          <span className="text-xs text-muted-foreground uppercase tracking-widest mb-3 block">Experience & Education</span>
           <h2 className="font-display text-4xl md:text-5xl font-bold text-[hsl(var(--text-primary))]">
-            Growth <span className="gradient-text">Trajectory</span>
+            Track <span className="gradient-text">Record</span>
           </h2>
         </div>
 

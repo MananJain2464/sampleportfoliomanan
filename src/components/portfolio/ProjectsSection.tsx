@@ -79,9 +79,9 @@ const ProjectsSection = () => {
     <section id="projects" className="section-padding relative">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <span className="font-mono text-sm text-primary mb-2 block">// projects.map()</span>
+          <span className="text-xs text-muted-foreground uppercase tracking-widest mb-3 block">Selected Work</span>
           <h2 className="font-display text-4xl md:text-5xl font-bold text-[hsl(var(--text-primary))]">
-            Portfolio <span className="gradient-text">Matrix</span>
+            Built in <span className="gradient-text">Production</span>
           </h2>
         </div>
 

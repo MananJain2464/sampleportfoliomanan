@@ -34,9 +34,9 @@ const SkillsSection = () => {
     <section id="skills" className="section-padding relative">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
-          <span className="font-mono text-sm text-primary mb-2 block">// skills.reduce()</span>
+          <span className="text-xs text-muted-foreground uppercase tracking-widest mb-3 block">Technical Skills</span>
           <h2 className="font-display text-4xl md:text-5xl font-bold text-[hsl(var(--text-primary))]">
-            Tech <span className="gradient-text">Arsenal</span>
+            The <span className="gradient-text">Stack</span>
           </h2>
         </div>
 

@@ -29,9 +29,9 @@ const ContactSection = () => {
   return (
     <section id="contact" className="section-padding relative">
       <div className="max-w-3xl mx-auto text-center">
-        <span className="font-mono text-sm text-primary mb-2 block">// execute.connect()</span>
+        <span className="text-xs text-muted-foreground uppercase tracking-widest mb-3 block">Get in Touch</span>
         <h2 className="font-display text-4xl md:text-5xl font-bold text-[hsl(var(--text-primary))] mb-4">
-          Let's <span className="gradient-text">Execute</span>
+          Let's <span className="gradient-text">Connect</span>
         </h2>
         <p className="text-muted-foreground mb-12 max-w-md mx-auto">
           Ready to build something extraordinary? Let's compile a plan together.

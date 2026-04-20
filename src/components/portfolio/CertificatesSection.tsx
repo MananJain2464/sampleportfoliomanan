@@ -22,7 +22,7 @@ const CertificatesSection = () => {
     <section id="certificates" className="section-padding relative">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
-          <span className="font-mono text-sm text-primary mb-2 block">// verified.credentials</span>
+          <span className="text-xs text-muted-foreground uppercase tracking-widest mb-3 block">Achievements</span>
           <h2 className="font-display text-4xl md:text-5xl font-bold text-[hsl(var(--text-primary))]">
             The <span className="gradient-text">Ledger</span>
           </h2>

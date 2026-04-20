@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Menu, X, Terminal } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 const navItems = [
   { label: "Career", href: "#career" },
@@ -28,9 +28,8 @@ const Navbar = () => {
       }`}
     >
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
-        <a href="#hero" className="flex items-center gap-2 text-[hsl(var(--text-primary))] font-display font-bold text-lg">
-          <Terminal className="h-5 w-5 text-primary" />
-          <span>dev<span className="text-primary">.</span>folio</span>
+        <a href="#hero" className="flex items-center gap-2 text-[hsl(var(--text-primary))] font-display font-bold text-lg tracking-tight">
+          <span>Manan<span className="text-primary"> Jain</span></span>
         </a>
 
         {/* Desktop nav */}
