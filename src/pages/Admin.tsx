@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   User, Briefcase, GraduationCap, FolderOpen, Award, Trophy,
-  ArrowLeft, Plus, Trash2, Save, Eye, EyeOff, Loader2, LogOut, Code2
+  ArrowLeft, Plus, Trash2, Save, Eye, EyeOff, Loader2, LogOut, Code2, BookOpen
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,8 +24,11 @@ import {
   useCredentials, useAddCredential, useUpdateCredential, useDeleteCredential,
 } from "@/hooks/useCredentials";
 import {
-  useSkills, useAddSkill, useDeleteSkill,
+  useSkills, useAddSkill, useUpdateSkill, useDeleteSkill,
 } from "@/hooks/useSkills";
+import {
+  useArticles, useAddArticle, useUpdateArticle, useDeleteArticle, type Article,
+} from "@/hooks/useArticles";
 
 import type { Project, TimelineEntry, Credential, Skill } from "@/lib/supabase";
 
@@ -37,6 +40,7 @@ const sections = [
   { key: "certificates", label: "Certificates", icon: Award },
   { key: "competitions", label: "Competitions", icon: Trophy },
   { key: "skills", label: "Skills", icon: Code2 },
+  { key: "articles", label: "Articles", icon: BookOpen },
 ];
 
 // ── Admin Shell ─────────────────────────────────────────────────────────────
@@ -102,6 +106,7 @@ const AdminContent = () => {
           {activeSection === "certificates" && <CredentialsEditor type="certificate" label="Certificates" />}
           {activeSection === "competitions" && <CredentialsEditor type="competition" label="Competitions" />}
           {activeSection === "skills" && <SkillsEditor />}
+          {activeSection === "articles" && <ArticlesEditor />}
         </div>
       </main>
     </div>
@@ -242,6 +247,9 @@ const TimelineEditor = ({ type, label }: { type: "experience" | "education"; lab
                 <Field label="Duration" value={d.duration ?? ""} onChange={(v) => patch(entry.id, "duration", v)} />
                 <Field label="Link" value={d.link ?? ""} onChange={(v) => patch(entry.id, "link", v)} />
                 <div className="md:col-span-2">
+                  <Field label="Logo / Image URL" value={d.image_url ?? ""} onChange={(v) => patch(entry.id, "image_url", v || null)} />
+                </div>
+                <div className="md:col-span-2">
                   <Field label="Description" value={d.description ?? ""} onChange={(v) => patch(entry.id, "description", v)} multiline />
                 </div>
                 <div className="md:col-span-2">
@@ -359,6 +367,7 @@ const ProjectsEditor = () => {
                 <Field label="Role" value={d.role ?? ""} onChange={(v) => patch(p.id, "role", v)} />
                 <Field label="GitHub URL" value={d.github_url ?? ""} onChange={(v) => patch(p.id, "github_url", v || null)} />
                 <Field label="Demo URL" value={d.demo_url ?? ""} onChange={(v) => patch(p.id, "demo_url", v || null)} />
+                <Field label="Image URL" value={d.image_url ?? ""} onChange={(v) => patch(p.id, "image_url", v || null)} />
                 <Field
                   label="Tools (comma-separated)"
                   value={(d.tools ?? []).join(", ")}
@@ -468,15 +477,23 @@ const CredentialsEditor = ({ type, label }: { type: "certificate" | "competition
 const SkillsEditor = () => {
   const { data: skills = [], isLoading } = useSkills();
   const addSkill = useAddSkill();
+  const updateSkill = useUpdateSkill();
   const deleteSkill = useDeleteSkill();
 
-  const [newSkill, setNewSkill] = useState({ name: "", category: "Languages" });
+  const [newSkill, setNewSkill] = useState({ name: "", category: "Languages", icon_url: "" });
+  const [editingIconId, setEditingIconId] = useState<string | null>(null);
+  const [iconUrlDraft, setIconUrlDraft] = useState("");
 
   const handleAdd = async () => {
     if (!newSkill.name.trim()) return;
     try {
-      await addSkill.mutateAsync({ ...newSkill, sort_order: skills.length + 1 });
-      setNewSkill({ name: "", category: "Languages" });
+      await addSkill.mutateAsync({
+        name: newSkill.name,
+        category: newSkill.category,
+        icon_url: newSkill.icon_url || null,
+        sort_order: skills.length + 1,
+      });
+      setNewSkill({ name: "", category: "Languages", icon_url: "" });
       toast.success("Skill added!");
     } catch {
       toast.error("Failed to add skill.");
@@ -489,6 +506,16 @@ const SkillsEditor = () => {
       toast.success("Skill deleted.");
     } catch {
       toast.error("Failed to delete skill.");
+    }
+  };
+
+  const handleSaveIcon = async (id: string) => {
+    try {
+      await updateSkill.mutateAsync({ id, icon_url: iconUrlDraft || null });
+      setEditingIconId(null);
+      toast.success("Icon URL saved!");
+    } catch {
+      toast.error("Failed to save icon.");
     }
   };
 
@@ -507,7 +534,7 @@ const SkillsEditor = () => {
       {/* Add new skill */}
       <div className="glass-card p-5 mb-6">
         <p className="font-mono text-xs text-primary mb-3">// add new skill</p>
-        <div className="flex gap-3">
+        <div className="flex gap-3 mb-3">
           <Input
             placeholder="Skill name"
             value={newSkill.name}
@@ -529,6 +556,12 @@ const SkillsEditor = () => {
             <Plus className="h-4 w-4" />
           </Button>
         </div>
+        <Input
+          placeholder="Icon URL (optional)"
+          value={newSkill.icon_url}
+          onChange={(e) => setNewSkill({ ...newSkill, icon_url: e.target.value })}
+          className="bg-muted/20 border-border/50 text-sm font-mono"
+        />
       </div>
 
       {/* Grouped skills */}
@@ -538,19 +571,152 @@ const SkillsEditor = () => {
             <p className="font-mono text-xs text-primary mb-3">// {category.toLowerCase()}</p>
             <div className="flex flex-wrap gap-2">
               {catSkills.map((s) => (
-                <div key={s.id} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-muted/40 border border-border/30 group">
-                  <span className="text-sm font-mono text-muted-foreground">{s.name}</span>
-                  <button
-                    onClick={() => handleDelete(s.id)}
-                    className="text-muted-foreground/40 hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </button>
+                <div key={s.id} className="flex flex-col items-center gap-1 group">
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-muted/40 border border-border/30">
+                    {s.icon_url && <img src={s.icon_url} alt={s.name} className="h-4 w-4 object-contain" />}
+                    <span className="text-sm font-mono text-muted-foreground">{s.name}</span>
+                    <button
+                      onClick={() => { setEditingIconId(s.id); setIconUrlDraft(s.icon_url ?? ""); }}
+                      className="text-muted-foreground/40 hover:text-primary transition-colors opacity-0 group-hover:opacity-100 ml-1"
+                      title="Edit icon URL"
+                    >
+                      <Save className="h-3 w-3" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(s.id)}
+                      className="text-muted-foreground/40 hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </div>
+                  {editingIconId === s.id && (
+                    <div className="flex gap-1 mt-1 w-full min-w-[200px]">
+                      <Input
+                        placeholder="Icon URL"
+                        value={iconUrlDraft}
+                        onChange={(e) => setIconUrlDraft(e.target.value)}
+                        className="bg-muted/20 border-border/50 text-xs font-mono h-7"
+                        autoFocus
+                      />
+                      <Button
+                        onClick={() => handleSaveIcon(s.id)}
+                        disabled={updateSkill.isPending}
+                        className="h-7 px-2 bg-primary text-primary-foreground font-mono text-xs"
+                      >
+                        OK
+                      </Button>
+                      <Button
+                        onClick={() => setEditingIconId(null)}
+                        variant="outline"
+                        className="h-7 px-2 font-mono text-xs"
+                      >
+                        ✕
+                      </Button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  );
+};
+
+// ── Articles Editor ──────────────────────────────────────────────────────────
+
+const ArticlesEditor = () => {
+  const { data: articles = [], isLoading } = useArticles();
+  const addArticle = useAddArticle();
+  const updateArticle = useUpdateArticle();
+  const deleteArticle = useDeleteArticle();
+
+  const [drafts, setDrafts] = useState<Record<string, Partial<Article>>>({});
+
+  const getDraft = (a: Article): Article => ({ ...a, ...(drafts[a.id] ?? {}) });
+
+  const patch = (id: string, key: keyof Article, value: unknown) => {
+    setDrafts((prev) => ({ ...prev, [id]: { ...prev[id], [key]: value } }));
+  };
+
+  const handleSave = async (a: Article) => {
+    try {
+      await updateArticle.mutateAsync({ id: a.id, ...getDraft(a) });
+      setDrafts((prev) => { const n = { ...prev }; delete n[a.id]; return n; });
+      toast.success("Article saved!");
+    } catch {
+      toast.error("Failed to save article.");
+    }
+  };
+
+  const handleAdd = async () => {
+    try {
+      await addArticle.mutateAsync({
+        title: "New Article", url: "", excerpt: null, cover_image: null,
+        published_at: null, read_time: null, tags: [], sort_order: articles.length + 1,
+      });
+      toast.success("Article added!");
+    } catch {
+      toast.error("Failed to add article.");
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteArticle.mutateAsync(id);
+      toast.success("Article deleted.");
+    } catch {
+      toast.error("Failed to delete.");
+    }
+  };
+
+  if (isLoading) return <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 text-primary animate-spin" /></div>;
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="font-display text-2xl font-bold text-[hsl(var(--text-primary))]">Articles</h2>
+        <Button onClick={handleAdd} variant="outline" className="border-primary/30 text-primary hover:bg-primary/10 font-mono text-sm">
+          <Plus className="h-4 w-4 mr-2" /> Add Article
+        </Button>
+      </div>
+      <div className="space-y-4">
+        {articles.map((a, idx) => {
+          const d = getDraft(a);
+          return (
+            <div key={a.id} className="glass-card p-5">
+              <div className="flex items-center justify-between mb-4">
+                <span className="font-mono text-xs text-muted-foreground">#{idx + 1}</span>
+                <button onClick={() => handleDelete(a.id)} className="text-muted-foreground hover:text-destructive transition-colors">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="md:col-span-2">
+                  <Field label="Title" value={d.title ?? ""} onChange={(v) => patch(a.id, "title", v)} />
+                </div>
+                <Field label="URL" value={d.url ?? ""} onChange={(v) => patch(a.id, "url", v)} />
+                <Field label="Cover Image URL" value={d.cover_image ?? ""} onChange={(v) => patch(a.id, "cover_image", v || null)} />
+                <Field label="Published At" value={d.published_at ?? ""} onChange={(v) => patch(a.id, "published_at", v || null)} />
+                <Field label="Read Time (e.g. 12 min read)" value={d.read_time ?? ""} onChange={(v) => patch(a.id, "read_time", v || null)} />
+                <div className="md:col-span-2">
+                  <Field
+                    label="Tags (comma-separated)"
+                    value={(d.tags ?? []).join(", ")}
+                    onChange={(v) => patch(a.id, "tags", v.split(",").map((t) => t.trim()).filter(Boolean))}
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <Field label="Excerpt" value={d.excerpt ?? ""} onChange={(v) => patch(a.id, "excerpt", v || null)} multiline />
+                </div>
+              </div>
+              <div className="flex justify-end mt-3">
+                <SaveButton onClick={() => handleSave(a)} loading={updateArticle.isPending} />
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

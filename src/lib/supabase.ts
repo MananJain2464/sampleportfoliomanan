@@ -40,6 +40,7 @@ export interface Project {
   visible: boolean;
   sort_order: number;
   created_at: string;
+  image_url: string | null;
 }
 
 export interface TimelineEntry {
@@ -52,6 +53,7 @@ export interface TimelineEntry {
   tags: string[];
   link: string | null;
   sort_order: number;
+  image_url: string | null;
 }
 
 export interface Credential {
@@ -70,6 +72,7 @@ export interface Skill {
   name: string;
   category: string;
   sort_order: number;
+  icon_url: string | null;
 }
 
 export interface Note {
