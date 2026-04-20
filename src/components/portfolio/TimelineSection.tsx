@@ -44,7 +44,12 @@ const TimelineCard = ({
       <div className="glass-card-hover p-6 group">
         <div className="flex items-center gap-2 mb-3">
           {item.image_url ? (
-            <img src={item.image_url} alt={item.organization} className="h-5 w-5 object-contain rounded" />
+            <img
+              src={item.image_url}
+              alt={item.organization}
+              className="h-5 w-5 object-contain rounded"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+            />
           ) : item.type === "experience" ? (
             <Briefcase className="h-4 w-4 text-primary" />
           ) : (

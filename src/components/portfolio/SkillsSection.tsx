@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useSkills } from "@/hooks/useSkills";
 import { useInView } from "@/hooks/useInView";
@@ -5,26 +6,30 @@ import type { Skill } from "@/lib/supabase";
 
 const CATEGORY_ORDER = ["Languages", "AI & ML", "Data", "Backend", "MLOps & Cloud", "Frameworks", "Tools", "Cloud"];
 
-const SkillChip = ({ skill }: { skill: Skill }) => (
-  <div className="flex flex-col items-center gap-2 p-3 rounded-xl bg-muted/30 border border-border/30 hover:border-primary/40 hover:bg-primary/5 hover:shadow-[0_0_16px_-4px_hsl(var(--primary)/0.2)] transition-all duration-300 group cursor-default w-[76px]">
-    <div className="h-10 w-10 flex items-center justify-center">
-      {skill.icon_url ? (
-        <img
-          src={skill.icon_url}
-          alt={skill.name}
-          className="h-10 w-10 object-contain group-hover:scale-110 transition-transform duration-300"
-        />
-      ) : (
-        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary/20 transition-colors duration-300">
-          <span className="font-mono text-sm font-bold text-primary">{skill.name[0]}</span>
-        </div>
-      )}
+const SkillChip = ({ skill }: { skill: Skill }) => {
+  const [imgError, setImgError] = useState(false);
+  return (
+    <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-muted/30 border border-border/30 hover:border-primary/40 hover:bg-primary/5 hover:shadow-[0_0_12px_-4px_hsl(var(--primary)/0.2)] transition-all duration-300 group cursor-default">
+      <div className="h-5 w-5 flex-shrink-0 flex items-center justify-center">
+        {skill.icon_url && !imgError ? (
+          <img
+            src={skill.icon_url}
+            alt={skill.name}
+            onError={() => setImgError(true)}
+            className="h-5 w-5 object-contain group-hover:scale-110 transition-transform duration-300"
+          />
+        ) : (
+          <div className="h-5 w-5 rounded-md bg-primary/15 flex items-center justify-center border border-primary/20">
+            <span className="font-mono text-[10px] font-bold text-primary">{skill.name[0]}</span>
+          </div>
+        )}
+      </div>
+      <span className="text-sm font-mono text-muted-foreground group-hover:text-primary/80 transition-colors duration-200 whitespace-nowrap">
+        {skill.name}
+      </span>
     </div>
-    <span className="text-[10px] font-mono text-muted-foreground text-center leading-tight group-hover:text-primary/80 transition-colors duration-200 w-full truncate">
-      {skill.name}
-    </span>
-  </div>
-);
+  );
+};
 
 const CategoryPanel = ({
   category,
@@ -55,7 +60,7 @@ const CategoryPanel = ({
         <div className="h-px flex-1 bg-gradient-to-r from-primary/40 to-transparent" />
         <span className="font-mono text-[10px] text-muted-foreground/50">{skills.length}</span>
       </div>
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-2">
         {skills.map((skill) => (
           <SkillChip key={skill.id} skill={skill} />
         ))}
