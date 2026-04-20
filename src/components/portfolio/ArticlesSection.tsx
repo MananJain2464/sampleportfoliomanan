@@ -1,5 +1,6 @@
 import { ExternalLink, Clock, Calendar, Loader2, BookOpen } from "lucide-react";
 import { useArticles, type Article } from "@/hooks/useArticles";
+import { useInView } from "@/hooks/useInView";
 
 const GRADIENT_FALLBACKS = [
   "from-primary/20 to-secondary/10",
@@ -84,11 +85,21 @@ const ArticleCard = ({ article, index }: { article: Article; index: number }) =>
 
 const ArticlesSection = () => {
   const { data: articles = [], isLoading } = useArticles();
+  const { ref: headingRef, isInView: headingInView } = useInView();
+  const { ref: gridRef, isInView: gridInView } = useInView();
 
   return (
     <section id="articles" className="section-padding relative">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12">
+        <div
+          ref={headingRef}
+          className="text-center mb-12"
+          style={{
+            opacity: headingInView ? 1 : 0,
+            transform: headingInView ? "translateY(0)" : "translateY(24px)",
+            transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
+          }}
+        >
           <span className="text-xs text-muted-foreground uppercase tracking-widest mb-3 block">Published Research</span>
           <h2 className="font-display text-4xl md:text-5xl font-bold text-[hsl(var(--text-primary))]">
             Quant <span className="gradient-text">Writing</span>
@@ -104,7 +115,15 @@ const ArticlesSection = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div
+              ref={gridRef}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              style={{
+                opacity: gridInView ? 1 : 0,
+                transform: gridInView ? "translateY(0)" : "translateY(32px)",
+                transition: "opacity 0.6s ease-out 0.15s, transform 0.6s ease-out 0.15s",
+              }}
+            >
               {articles.map((article, index) => (
                 <ArticleCard key={article.id} article={article} index={index} />
               ))}

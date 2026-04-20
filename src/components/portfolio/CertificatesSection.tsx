@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { Award, Trophy, Filter, ExternalLink, Loader2 } from "lucide-react";
 import { useCredentials } from "@/hooks/useCredentials";
+import { useInView } from "@/hooks/useInView";
 
 const CertificatesSection = () => {
   const [activeTab, setActiveTab] = useState<"certs" | "comps">("certs");
   const [filter, setFilter] = useState("All");
+  const { ref: headingRef, isInView: headingInView } = useInView();
+  const { ref: contentRef, isInView: contentInView } = useInView();
 
   const { data: certificates = [], isLoading: loadingCerts } = useCredentials("certificate");
   const { data: competitions = [], isLoading: loadingComps } = useCredentials("competition");
@@ -21,7 +24,15 @@ const CertificatesSection = () => {
   return (
     <section id="certificates" className="section-padding relative">
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-12">
+        <div
+          ref={headingRef}
+          className="text-center mb-12"
+          style={{
+            opacity: headingInView ? 1 : 0,
+            transform: headingInView ? "translateY(0)" : "translateY(24px)",
+            transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
+          }}
+        >
           <span className="text-xs text-muted-foreground uppercase tracking-widest mb-3 block">Achievements</span>
           <h2 className="font-display text-4xl md:text-5xl font-bold text-[hsl(var(--text-primary))]">
             The <span className="gradient-text">Ledger</span>
@@ -76,7 +87,15 @@ const CertificatesSection = () => {
             <Loader2 className="h-8 w-8 text-primary animate-spin" />
           </div>
         ) : (
-          <div className="glass-card overflow-hidden">
+          <div
+            ref={contentRef}
+            className="glass-card overflow-hidden"
+            style={{
+              opacity: contentInView ? 1 : 0,
+              transform: contentInView ? "translateY(0)" : "translateY(28px)",
+              transition: "opacity 0.6s ease-out 0.1s, transform 0.6s ease-out 0.1s",
+            }}
+          >
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>

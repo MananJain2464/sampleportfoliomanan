@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Mail, Linkedin, Twitter, Github, Copy, Check, Code2 } from "lucide-react";
 import { usePersonal } from "@/hooks/usePersonal";
+import { useInView } from "@/hooks/useInView";
 
 const ContactSection = () => {
   const [copied, setCopied] = useState(false);
   const { data: personal } = usePersonal();
+  const { ref: sectionRef, isInView } = useInView();
 
   const email = personal?.email ?? "er.mananjain26@gmail.com";
   const linkedin = personal?.linkedin ?? "https://www.linkedin.com/in/manan-jain-6770751b6";
@@ -28,7 +30,15 @@ const ContactSection = () => {
 
   return (
     <section id="contact" className="section-padding relative">
-      <div className="max-w-3xl mx-auto text-center">
+      <div
+        ref={sectionRef}
+        className="max-w-3xl mx-auto text-center"
+        style={{
+          opacity: isInView ? 1 : 0,
+          transform: isInView ? "translateY(0)" : "translateY(32px)",
+          transition: "opacity 0.7s ease-out, transform 0.7s ease-out",
+        }}
+      >
         <span className="text-xs text-muted-foreground uppercase tracking-widest mb-3 block">Get in Touch</span>
         <h2 className="font-display text-4xl md:text-5xl font-bold text-[hsl(var(--text-primary))] mb-4">
           Let's <span className="gradient-text">Connect</span>
