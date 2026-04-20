@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ExternalLink, Github, Loader2 } from "lucide-react";
 import { useProjects } from "@/hooks/useProjects";
+import { useInView } from "@/hooks/useInView";
 import type { Project } from "@/lib/supabase";
 
 const CATEGORIES = ["All", "ML/MLOps", "Generative AI", "Web Dev"] as const;
@@ -13,8 +14,12 @@ const ProjectCard = ({ project }: { project: Project }) => (
   >
     <div className="flex items-start justify-between mb-4">
       <div className="flex items-center gap-2">
-        <div className="w-10 h-10 rounded-lg bg-muted/50 flex items-center justify-center">
-          <span className="font-mono text-sm text-primary">{"{ }"}</span>
+        <div className="w-10 h-10 rounded-lg bg-muted/50 flex items-center justify-center overflow-hidden">
+          {project.image_url ? (
+            <img src={project.image_url} alt={project.title} className="w-full h-full object-cover" />
+          ) : (
+            <span className="font-mono text-sm text-primary">{"{ }"}</span>
+          )}
         </div>
         <span className="px-2 py-0.5 rounded-full text-[10px] font-mono border border-border/30 text-muted-foreground">
           {project.category}
@@ -69,6 +74,8 @@ const ProjectCard = ({ project }: { project: Project }) => (
 const ProjectsSection = () => {
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const { data: projects = [], isLoading } = useProjects(true);
+  const { ref: headingRef, isInView: headingInView } = useInView();
+  const { ref: gridRef, isInView: gridInView } = useInView();
 
   const filtered =
     activeCategory === "All"
@@ -78,7 +85,15 @@ const ProjectsSection = () => {
   return (
     <section id="projects" className="section-padding relative">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12">
+        <div
+          ref={headingRef}
+          className="text-center mb-12"
+          style={{
+            opacity: headingInView ? 1 : 0,
+            transform: headingInView ? "translateY(0)" : "translateY(24px)",
+            transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
+          }}
+        >
           <span className="text-xs text-muted-foreground uppercase tracking-widest mb-3 block">Selected Work</span>
           <h2 className="font-display text-4xl md:text-5xl font-bold text-[hsl(var(--text-primary))]">
             Built in <span className="gradient-text">Production</span>
@@ -111,7 +126,15 @@ const ProjectsSection = () => {
             <p className="font-mono text-sm text-muted-foreground">No projects found.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div
+            ref={gridRef}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            style={{
+              opacity: gridInView ? 1 : 0,
+              transform: gridInView ? "translateY(0)" : "translateY(32px)",
+              transition: "opacity 0.6s ease-out 0.15s, transform 0.6s ease-out 0.15s",
+            }}
+          >
             {filtered.map((project) => (
               <ProjectCard key={project.id} project={project} />
             ))}
