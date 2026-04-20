@@ -1,119 +1,128 @@
-import { Clock, ArrowUpRight, BookOpen } from "lucide-react";
+import { ExternalLink, Clock, Calendar, Loader2, BookOpen } from "lucide-react";
+import { useArticles, type Article } from "@/hooks/useArticles";
 
-interface Article {
-  id: string;
-  title: string;
-  excerpt: string;
-  date: string;
-  readTime: string;
-  tags: string[];
-  url: string;
-  image?: string;
-}
-
-const articles: Article[] = [
-  {
-    id: "1",
-    title: "Building a Real-Time Trading Bot with Reinforcement Learning",
-    excerpt: "How I used PPO and custom reward shaping to build a profitable algorithmic trading system that adapts to market volatility.",
-    date: "2024-03-15",
-    readTime: "12 min",
-    tags: ["AI/ML", "Finance", "Python"],
-    url: "#",
-  },
-  {
-    id: "2",
-    title: "Why I Switched from Kubernetes to Serverless (And Back Again)",
-    excerpt: "A deep dive into the cost-benefit analysis of container orchestration vs serverless for high-throughput fintech applications.",
-    date: "2024-01-22",
-    readTime: "8 min",
-    tags: ["DevOps", "Architecture"],
-    url: "#",
-  },
-  {
-    id: "3",
-    title: "Fine-Tuning LLMs for Financial Document Analysis",
-    excerpt: "Step-by-step guide to creating domain-specific language models for SEC filing analysis and earnings call summarization.",
-    date: "2023-11-08",
-    readTime: "15 min",
-    tags: ["NLP", "Finance", "LLMs"],
-    url: "#",
-  },
-  {
-    id: "4",
-    title: "The Architecture Behind 10k TPS: Lessons from Building a Payment Gateway",
-    excerpt: "System design patterns and optimizations that enabled our payment system to handle peak Black Friday traffic.",
-    date: "2023-09-14",
-    readTime: "10 min",
-    tags: ["System Design", "Performance"],
-    url: "#",
-  },
+const GRADIENT_FALLBACKS = [
+  "from-primary/20 to-secondary/10",
+  "from-secondary/20 to-primary/10",
+  "from-primary/15 via-secondary/10 to-primary/5",
+  "from-secondary/15 via-primary/10 to-secondary/5",
+  "from-primary/20 via-transparent to-secondary/15",
+  "from-secondary/20 via-transparent to-primary/15",
 ];
 
-const ArticlesSection = () => {
-  return (
-    <section id="articles" className="section-padding relative">
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-16">
-          <span className="font-mono text-sm text-primary mb-2 block">// medium.feed()</span>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-[hsl(var(--text-primary))]">
-            Latest <span className="gradient-text">Dispatches</span>
-          </h2>
-        </div>
+const ArticleCard = ({ article, index }: { article: Article; index: number }) => {
+  const gradient = GRADIENT_FALLBACKS[index % GRADIENT_FALLBACKS.length];
 
-        {/* Ticker bar */}
-        <div className="overflow-hidden mb-12 py-3 border-y border-border/30">
-          <div className="flex animate-ticker whitespace-nowrap">
-            {[...articles, ...articles].map((article, i) => (
-              <span key={i} className="inline-flex items-center gap-3 mx-8 text-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                <span className="font-mono text-muted-foreground">{article.title}</span>
-                <span className="text-primary font-mono text-xs">{article.readTime}</span>
+  return (
+    <a
+      href={article.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group flex flex-col glass-card overflow-hidden hover:border-primary/30 hover:shadow-[0_0_30px_-10px_hsl(var(--primary)/0.2)] transition-all duration-300"
+    >
+      {/* Cover image */}
+      <div className="relative w-full h-44 overflow-hidden">
+        {article.cover_image ? (
+          <img
+            src={article.cover_image}
+            alt={article.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        ) : (
+          <div className={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center`}>
+            <BookOpen className="h-10 w-10 text-primary/30" />
+          </div>
+        )}
+        <div className="absolute inset-0 bg-background/0 group-hover:bg-background/10 transition-all duration-300 flex items-center justify-center">
+          <ExternalLink className="h-6 w-6 text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex flex-col flex-1 p-5">
+        {article.tags?.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {article.tags.slice(0, 3).map((tag) => (
+              <span
+                key={tag}
+                className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-primary/10 text-primary/80 border border-primary/20"
+              >
+                {tag}
               </span>
             ))}
           </div>
+        )}
+
+        <h3 className="font-display text-base font-semibold text-[hsl(var(--text-primary))] mb-3 leading-snug group-hover:text-primary transition-colors duration-200 line-clamp-2">
+          {article.title}
+        </h3>
+
+        {article.excerpt && (
+          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 flex-1 mb-4">
+            {article.excerpt}
+          </p>
+        )}
+
+        <div className="flex items-center gap-4 pt-3 border-t border-border/30 mt-auto">
+          {article.published_at && (
+            <span className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
+              <Calendar className="h-3 w-3" />
+              {article.published_at}
+            </span>
+          )}
+          {article.read_time && (
+            <span className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
+              <Clock className="h-3 w-3" />
+              {article.read_time}
+            </span>
+          )}
+        </div>
+      </div>
+    </a>
+  );
+};
+
+const ArticlesSection = () => {
+  const { data: articles = [], isLoading } = useArticles();
+
+  return (
+    <section id="articles" className="section-padding relative">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-12">
+          <span className="text-xs text-muted-foreground uppercase tracking-widest mb-3 block">Published Research</span>
+          <h2 className="font-display text-4xl md:text-5xl font-bold text-[hsl(var(--text-primary))]">
+            Quant <span className="gradient-text">Writing</span>
+          </h2>
+          <p className="text-muted-foreground mt-4 max-w-xl mx-auto text-sm">
+            Deep-dives on quantitative finance, portfolio theory, and algorithmic trading.
+          </p>
         </div>
 
-        <div className="space-y-4">
-          {articles.map((article) => (
-            <a
-              key={article.id}
-              href={article.url}
-              className="group glass-card-hover p-6 flex flex-col md:flex-row md:items-center gap-4 block"
-            >
-              <div className="flex-shrink-0 w-24 h-16 md:w-32 md:h-20 rounded-lg bg-muted/20 border border-border/30 overflow-hidden flex items-center justify-center group-hover:border-primary/30 transition-colors">
-                {article.image ? (
-                  <img src={article.image} alt={article.title} className="w-full h-full object-cover" />
-                ) : (
-                  <BookOpen className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                )}
-              </div>
+        {isLoading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="h-8 w-8 text-primary animate-spin" />
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {articles.map((article, index) => (
+                <ArticleCard key={article.id} article={article} index={index} />
+              ))}
+            </div>
 
-              <div className="flex-1 min-w-0">
-                <h3 className="font-display text-lg font-semibold text-[hsl(var(--text-primary))] group-hover:text-primary transition-colors mb-1 truncate">
-                  {article.title}
-                </h3>
-                <p className="text-sm text-muted-foreground line-clamp-1">{article.excerpt}</p>
-              </div>
-
-              <div className="flex items-center gap-4 flex-shrink-0">
-                <div className="flex gap-2">
-                  {article.tags.slice(0, 2).map((tag) => (
-                    <span key={tag} className="px-2 py-1 rounded-md bg-muted/30 text-xs font-mono text-muted-foreground">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-                <div className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground">
-                  <Clock className="h-3 w-3" />
-                  {article.readTime}
-                </div>
-                <span className="font-mono text-xs text-muted-foreground">{article.date}</span>
-                <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-              </div>
-            </a>
-          ))}
-        </div>
+            <div className="text-center mt-10">
+              <a
+                href="https://medium.com/@er.mananjain26"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-border/50 text-sm font-mono text-muted-foreground hover:text-primary hover:border-primary/30 transition-all duration-300"
+              >
+                View all on Medium
+                <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+            </div>
+          </>
+        )}
       </div>
     </section>
   );
