@@ -13,8 +13,12 @@ const ProjectCard = ({ project }: { project: Project }) => (
   >
     <div className="flex items-start justify-between mb-4">
       <div className="flex items-center gap-2">
-        <div className="w-10 h-10 rounded-lg bg-muted/50 flex items-center justify-center">
-          <span className="font-mono text-sm text-primary">{"{ }"}</span>
+        <div className="w-10 h-10 rounded-lg bg-muted/50 flex items-center justify-center overflow-hidden">
+          {project.image_url ? (
+            <img src={project.image_url} alt={project.title} className="w-full h-full object-cover" />
+          ) : (
+            <span className="font-mono text-sm text-primary">{"{ }"}</span>
+          )}
         </div>
         <span className="px-2 py-0.5 rounded-full text-[10px] font-mono border border-border/30 text-muted-foreground">
           {project.category}
