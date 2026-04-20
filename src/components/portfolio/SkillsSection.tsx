@@ -5,7 +5,10 @@ import type { Skill } from "@/lib/supabase";
 const CATEGORY_ORDER = ["Languages", "Frameworks", "Tools", "Cloud"];
 
 const SkillBadge = ({ skill }: { skill: Skill }) => (
-  <span className="px-3 py-1.5 rounded-lg bg-muted/40 border border-border/30 text-sm font-mono text-muted-foreground hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all duration-200 cursor-default">
+  <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-muted/40 border border-border/30 text-sm font-mono text-muted-foreground hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-all duration-200 cursor-default">
+    {skill.icon_url && (
+      <img src={skill.icon_url} alt={skill.name} className="h-4 w-4 object-contain" />
+    )}
     {skill.name}
   </span>
 );
